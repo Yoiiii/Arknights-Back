@@ -98,20 +98,21 @@ export default {
     rotateRightImage() {
       this.$refs.cropper.rotateRight();
     },
-    async uploadImage() {
+    async uploadImage(i) {
       this.dialogVisible = false;
       this.$refs.cropper.getCropData(async data => {
         let file = this.dataURLtoFile(data);
-        console.log(file);
+        const formData = new FormData(); // 声明一个FormData对象
+        formData.append("file", file);
         const res = await this.$http.post(
           this.$http.defaults.baseURL + "/upload",
-          file,
+          formData,
           {
             headers: { Authorization: `Bearer ${localStorage.token || ""}` }
           }
         );
-        this.model.item.image = res.data.url;
         console.log(res.data);
+        this.model.item[i].image = res.data.url;
       });
     },
     async fetch() {
@@ -157,28 +158,6 @@ export default {
       }
       return new File([u8arr], `${filename}.${suffix}`, {
         type: mime
-      });
-    },
-    function(base64data) {
-      return new Promise((resolve, reject) => {
-        const [, format, bodyData] =
-          /data:image\/(\w+);base64,(.*)/.exec(base64data) || [];
-        if (!format) {
-          reject(new Error("ERROR_BASE64SRC_PARSE"));
-        }
-        const filePath = `${wx.env.USER_DATA_PATH}/${FILE_BASE_NAME}.${format}`;
-        const buffer = wx.base64ToArrayBuffer(bodyData);
-        fsm.writeFile({
-          filePath,
-          data: buffer,
-          encoding: "binary",
-          success() {
-            resolve(filePath);
-          },
-          fail() {
-            reject(new Error("ERROR_BASE64SRC_WRITE"));
-          }
-        });
       });
     }
   },
