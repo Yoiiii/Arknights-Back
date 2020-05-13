@@ -46,11 +46,7 @@
           </el-form-item>
           <el-form-item label="标签">
             <el-select v-model="model.Tags" multiple>
-              <el-option 
-              v-for="item in tags" 
-              :key="item._id" 
-              :label="item.name" 
-              :value="item._id"></el-option>
+              <el-option v-for="item in tags" :key="item._id" :label="item.name" :value="item._id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="星级">
@@ -150,25 +146,32 @@ export default {
     async save() {
       let res;
       if (this.id) {
-        res = this.$http.put(`rest/operators/${this.id}`, this.model);
+        res = await this.$http.put(`rest/operators/${this.id}`, this.model);
+        console.log(res);
       } else {
-        res = this.$http.post("rest/operators", this.model);
+        res = await this.$http.post("rest/operators", this.model);
       }
-      console.log(res);
-      this.$router.push("/operators/list");
-      this.$message({
-        type: "success",
-        message: "保存成功"
-      });
+      if (res.data) {
+        this.$router.push("/operators/list");
+        this.$message({
+          type: "success",
+          message: "保存成功"
+        });
+      } else {
+        this.$message({
+          type: "faill",
+          message: "保存失败"
+        });
+      }
     },
     async fetch() {
       const res = await this.$http.get(`rest/operators/${this.id}`);
       this.model = Object.assign({}, this.model, res.data); //防止数据undefined
     },
     async fetchCategories() {
-      const res = await this.$http.get(`rest/categories`);
+      const res = await this.$http.post("getCategory/", { name: "干员分类" });
       this.categories = res.data;
-    },
+    }
     // async fetchOperators() {
     //   const res = await this.$http.get(`rest/operators`);
     //   this.operators = res.data;

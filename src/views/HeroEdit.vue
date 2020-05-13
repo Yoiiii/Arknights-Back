@@ -129,7 +129,7 @@
           </el-button>
           <el-row type="flex" style="flex-wrap: wrap">
             <el-col :md="12" v-for="(item,i) in model.partners" :key="i">
-              <el-form-item  label="英雄">
+              <el-form-item label="英雄">
                 <el-select filterable v-model="item.hero">
                   <el-option
                     v-for="hero in heroes"
@@ -178,16 +178,22 @@ export default {
     async save() {
       let res;
       if (this.id) {
-        res = this.$http.put(`rest/heroes/${this.id}`, this.model);
+        res =  await this.$http.put(`rest/heroes/${this.id}`, this.model);
       } else {
-        res = this.$http.post("rest/heroes", this.model);
+        res =  await this.$http.post("rest/heroes", this.model);
       }
-      console.log(res);
-      this.$router.push("/heroes/list");
-      this.$message({
-        type: "success",
-        message: "保存成功"
-      });
+      if (res.data) {
+        this.$router.push("/heroes/list");
+        this.$message({
+          type: "success",
+          message: "保存成功"
+        });
+      } else {
+        this.$message({
+          type: "faill",
+          message: "保存失败"
+        });
+      }
     },
     async fetch() {
       const res = await this.$http.get(`rest/heroes/${this.id}`);

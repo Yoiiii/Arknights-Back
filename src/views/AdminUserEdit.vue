@@ -5,7 +5,7 @@
       <el-form-item label="用户名">
         <el-input v-model="model.username"></el-input>
       </el-form-item>
-            <el-form-item label="密码">
+      <el-form-item label="密码">
         <el-input type="password" v-model="model.password"></el-input>
       </el-form-item>
       <el-form-item>
@@ -26,21 +26,29 @@ export default {
   },
   methods: {
     async save() {
+      let res;
       if (this.id) {
-        this.$http.put(`rest/admin_users/${this.id}`, this.model);
+        res = await this.$http.put(`rest/admin_users/${this.id}`, this.model);
       } else {
-        this.$http.post("rest/admin_users", this.model);
+        res = await this.$http.post("rest/admin_users", this.model);
       }
-      this.$router.push("/admin_users/list");
-      this.$message({
-        type: "success",
-        message: "保存成功"
-      });
+      if (res.data) {
+        this.$router.push("/admin_users/list");
+        this.$message({
+          type: "success",
+          message: "保存成功"
+        });
+      } else {
+        this.$message({
+          type: "faill",
+          message: "保存失败"
+        });
+      }
     },
     async fetch() {
       const res = await this.$http.get(`rest/admin_users/${this.id}`);
       this.model = res.data;
-    },
+    }
   },
   created() {
     this.id && this.fetch();

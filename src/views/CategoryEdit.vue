@@ -4,10 +4,7 @@
     <el-form label-width="120px" @submit.native.prevent="save">
       <el-form-item label="上级分类">
         <el-select v-model="model.parent">
-          <el-option v-for="item in parents" :key="item._id"
-          :label="item.name"
-          :value="item._id"
-          ></el-option>
+          <el-option v-for="item in parents" :key="item._id" :label="item.name" :value="item._id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="名称">
@@ -23,7 +20,7 @@
 export default {
   props: {
     id: {}
-  }, 
+  },
   data() {
     return {
       model: {},
@@ -32,16 +29,24 @@ export default {
   },
   methods: {
     async save() {
+      let res;
       if (this.id) {
-        this.$http.put(`rest/categories/${this.id}`, this.model);
+        res = await this.$http.put(`rest/categories/${this.id}`, this.model);
       } else {
-        this.$http.post("rest/categories", this.model);
+        res = await this.$http.post("rest/categories", this.model);
       }
-      this.$router.push("/categories/list");
-      this.$message({
-        type: "success",
-        message: "保存成功"
-      });
+      if (res.data) {
+        this.$router.push("/categories/list");
+        this.$message({
+          type: "success",
+          message: "保存成功"
+        });
+      } else {
+        this.$message({
+          type: "faill",
+          message: "保存失败"
+        });
+      }
     },
     async fetch() {
       const res = await this.$http.get(`rest/categories/${this.id}`);

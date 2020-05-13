@@ -44,23 +44,31 @@ export default {
   },
   methods: {
     async save() {
+      let res;
       if (this.id) {
-        this.$http.put(`rest/items/${this.id}`, this.model);
+        res =  await this.$http.put(`rest/items/${this.id}`, this.model);
       } else {
-        this.$http.post("rest/items", this.model);
+        res = await  this.$http.post("rest/items", this.model);
       }
-      this.$router.push("/items/list");
-      this.$message({
-        type: "success",
-        message: "保存成功"
-      });
+      if (res.data) {
+        this.$router.push("/items/list");
+        this.$message({
+          type: "success",
+          message: "保存成功"
+        });
+      } else {
+        this.$message({
+          type: "faill",
+          message: "保存失败"
+        });
+      }
     },
     async fetch() {
       const res = await this.$http.get(`rest/items/${this.id}`);
       this.model = res.data;
     },
-    afterUpload(res){
-      this.$set(this.model,'icon',res.url)
+    afterUpload(res) {
+      this.$set(this.model, "icon", res.url);
       //this.model.icon=res.url
     }
     // async fetchParents() {
