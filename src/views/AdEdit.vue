@@ -20,6 +20,7 @@
                 action="mixinUploadUrl"
                 :show-file-list="false"
                 :headers="mixinGetAuthHeaders()"
+                :before-upload="uploadItem(i)"
                 :http-request="cutImage"
               >
                 <img v-if="item.image" :src="item.image" class="avatar" />
@@ -67,7 +68,8 @@ export default {
       },
       dialogVisible: false,
       cutimage: "",
-      aftercut: ""
+      aftercut: "",
+      uploaditem:0
     };
   },
   methods: {
@@ -91,6 +93,10 @@ export default {
         });
       }
     },
+    uploadItem(i){
+      this.uploaditem=i
+      console.log(this.uploaditem);
+    },
     async cutImage(parms) {
       this.cutimage = await this.getBase64(parms.file);
       this.dialogVisible = true;
@@ -98,7 +104,7 @@ export default {
     rotateRightImage() {
       this.$refs.cropper.rotateRight();
     },
-    async uploadImage(i) {
+    async uploadImage() {
       this.dialogVisible = false;
       this.$refs.cropper.getCropData(async data => {
         let file = this.dataURLtoFile(data);
@@ -112,7 +118,9 @@ export default {
           }
         );
         console.log(res.data);
-        this.model.item[i].image = res.data.url;
+        console.log(this.model);
+        let i =this.uploaditem
+        this.model.items[i].image = res.data.url;
       });
     },
     async fetch() {
